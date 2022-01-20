@@ -1,7 +1,7 @@
 // game values
 let min = 1,
     max = 10,
-    winningNum = 2,
+    winningNum = getRandomNum(min, max),
     guessesLeft = 3;
 
 // ui elements
@@ -16,7 +16,14 @@ const game = document.querySelector('#game'),
       //assign UI min and maxx
       minNum.textContent = min;
       maxNum.textContent = max;
+      //play agian event listen
+      game.addEventListener('mousedown', function(e){
+          if(e.target.className === 'play-again'){
+              window.location.reload();
+          }
 
+
+      });
       // listen for guess
       guessBtn.addEventListener('click', function(){
        let guess = parseInt(guessInput.value);
@@ -27,16 +34,47 @@ const game = document.querySelector('#game'),
        }
        //check if won
        if( guess === winningNum){
-        guessInput.disabled = true
-        //change border color
-        guessInput.style.borderColor = 'green';
-        //set message
-        setMessage(`${winningNum} is correct!, YOU WIN`, 'green');
+       gameOver(true, `${winningNum} is correct!, YOU WIN`);
        } else{
+        //wrong number
+        guessesLeft -= 1;
+        if(guessesLeft === 0){
+            //game over
+           gameOver(false, `Game Over, you lost. The correct number was ${winningNum}`);
 
+        }else{
+            //game cintunes - answer wrong
+            //change color border
+            guessInput.style.borderColor = 'red';
+            //clear input
+            guessInput.value = '';
+
+
+            setMessage(`${guess} is not correct, ${guessesLeft} guesses left`, 'red');
+        }
        }
       });
 
+      // game over
+      function gameOver(won, msg){
+        let color;
+        won === true ? color = 'green' : color = 'red';
+        guessInput.disabled = true
+        //change border color
+        guessInput.style.borderColor = 'green';
+        // set text color
+        message.style.color = color;
+        //set message
+        setMessage(msg);
+        // play agian
+        guessBtn.value = 'Play Again';
+        guessBtn.className += 'play-again';
+      }
+      // get winning number
+      function getRandomNum(min, max){
+          return Math.floor(Math.random()*(max-min+1)+1);
+
+      }
       // set message
 
       function setMessage(msg, color){
